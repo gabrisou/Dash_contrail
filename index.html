@@ -78,7 +78,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
 .hm-table td.plate-td{position:sticky;left:0;background:var(--bg);z-index:5;padding-right:5px;white-space:nowrap;width:160px;min-width:160px;}
 .plate-label{display:flex;align-items:center;gap:3px;font-size:8px;font-weight:600;font-family:'Montserrat',sans-serif;color:var(--ink2);padding:1px 0;line-height:1;}
 .plate-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.plate-motorista{font-size:6.5px;color:var(--muted);font-weight:400;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.plate-motorista{font-size:6.5px;color:var(--muted);font-weight:400;max-width:105px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .hm-cell{width:100%;height:16px;border-radius:1px;cursor:pointer;position:relative;transition:transform .1s;display:block;}
 .hm-cell:hover{transform:scale(1.3);z-index:30;}
 .hm-cell.unavail{background:var(--unavail);}
@@ -128,7 +128,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
     </div>
   </div>
   <div class="hright">
-    <div class="period">Janeiro – Março 2026 · Atualizado 23/03/2026 16:16</div>
+    <div class="period">Janeiro – Março 2026 · Atualizado 23/03/2026 16:38</div>
     <div class="filters">AGR: 1598 · DH: 974 · Total: 2572 viagens</div>
   </div>
 </div>
@@ -142,7 +142,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
 
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
   <div>
-    <div class="pt">Utilização Diária · Carreta × Dia · ordenado por Motorista</div>
+    <div class="pt">Utilização Diária · Carreta × Dia</div>
     <div class="ps">verde = realizado · azul = planejado · cinza = não disponível · laranja = hoje · ⚠ = 5+ dias sem viagem</div>
   </div>
   <div class="tabs" id="tabs"></div>
@@ -188,7 +188,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
   <div class="ph">
     <div>
       <div class="pt red">Carretas sem viagem · 5+ dias úteis consecutivos</div>
-      <div class="ps">contagem a partir de hoje (23/03/2026 16:16)</div>
+      <div class="ps">contagem a partir de hoje (23/03/2026 16:38)</div>
     </div>
     <span class="badge red" id="alertaBadge">0 placas</span>
   </div>
@@ -235,36 +235,36 @@ const alertaSet = new Set(ALERTAS.map(a => a.plate));
 const medals    = ['🥇','🥈','🥉'];
 
 // ── Grupo do motorista ─────────────────────────────
+// 0=Unimetal · 1=Drop LG · 2=Motoristas · 3=Disponível
 function grupoMotorista(placa) {
   const mot = MOTORISTA[placa] || '';
-  if(!mot.startsWith('B -') && !mot.startsWith('A -'))
-    return {key:0, label:'Agregados · Motoristas'};
   if(mot.startsWith('B - UNIMETAL'))
-    return {key:1, label:'Unimetal'};
+    return {key:0, label:'Unimetal'};
   if(mot.startsWith('A - DROP'))
-    return {key:2, label:'Drop LG'};
+    return {key:1, label:'Drop LG'};
+  if(!mot.startsWith('A -') && !mot.startsWith('B -'))
+    return {key:2, label:'Motoristas'};
   return {key:3, label:'Disponível'};
 }
 
 // ── Label curto do motorista ───────────────────────
 function motLabel(placa) {
   const mot = MOTORISTA[placa] || '—';
-  if(mot.startsWith('B - UNIMETAL'))      return 'Unimetal';
-  if(mot.startsWith('A - DROP'))          return 'Drop LG';
-  if(mot.startsWith('A - DISPONÍVEL'))    return 'Disponível';
-  // Pega primeiro nome + sobrenome
+  if(mot.startsWith('B - UNIMETAL'))        return 'Unimetal';
+  if(mot.startsWith('A - DROP'))            return 'Drop LG';
+  if(mot.startsWith('A - DISPONÍVEL'))      return 'Disponível';
   const partes = mot.trim().split(' ');
   return partes.length >= 2 ? partes[0]+' '+partes[1] : mot;
 }
 
 // ── Cor do dot por grupo ───────────────────────────
 function dotColor(placa) {
-  const grp = grupoMotorista(placa).key;
   const sit = SITUACAO[placa] || '';
+  const grp = grupoMotorista(placa).key;
   if(sit === 'MANUTENÇÃO') return '#d68910';
-  if(grp === 0) return '#007351';  // motorista real — verde
-  if(grp === 1) return '#7b1fa2';  // unimetal — roxo
-  if(grp === 2) return '#1a5276';  // drop — azul escuro
+  if(grp === 0) return '#7b1fa2';  // unimetal — roxo
+  if(grp === 1) return '#1a5276';  // drop     — azul escuro
+  if(grp === 2) return '#007351';  // motorista — verde
   return '#9e9e9e';                // disponível — cinza
 }
 
@@ -320,7 +320,6 @@ function buildHeatmap(mes){
   const table = document.getElementById('hmTable');
   table.innerHTML = '';
 
-  // Header
   let thead = '<thead><tr><th class="plate-th">CARRETA · MOTORISTA</th>';
   dias.forEach(d => {
     const dt=new Date(d+'T12:00:00'),wd=dt.getDay(),fut=d>hoje_iso,eh_hoje=d===hoje_iso;
@@ -336,7 +335,7 @@ function buildHeatmap(mes){
   PLACAS.forEach(placa=>{
     const grp = grupoMotorista(placa);
 
-    // Linha de separador de grupo
+    // Linha separadora de grupo
     if(grp.key !== grupoAtual){
       grupoAtual = grp.key;
       const sepRow = document.createElement('tr');
@@ -347,10 +346,9 @@ function buildHeatmap(mes){
 
     const ini   = PROC[placa] ? new Date(PROC[placa]+'T12:00:00') : null;
     const sit   = SITUACAO[placa] || '';
-    const mot   = MOTORISTA[placa] || '—';
-    const mLabel= motLabel(placa);
+    const mLbl  = motLabel(placa);
     const dot   = dotColor(placa);
-    const temAlerta = alertaSet.has(placa);
+    const temAlerta  = alertaSet.has(placa);
     const plateStyle = temAlerta ? 'color:var(--red);font-weight:700' : '';
     const alertIcon  = temAlerta ? ' ⚠' : '';
 
@@ -360,7 +358,7 @@ function buildHeatmap(mes){
         <div class="plate-dot" style="background:${dot}"></div>
         <div style="display:flex;flex-direction:column;gap:0;">
           <span style="${plateStyle}">${placa}${alertIcon}</span>
-          <span class="plate-motorista">${mLabel}</span>
+          <span class="plate-motorista">${mLbl}</span>
         </div>
       </div>
     </td>`;
@@ -380,8 +378,8 @@ function buildHeatmap(mes){
       }
       if(eh_hoje) cls=(cls+' hoje-col').trim();
       const tip=dd
-        ?`${placa} · ${mLabel}&#10;${d}&#10;${dd.n} viagem(ns)${fut?' · planejado':''}&#10;${[...new Set(dd.ops||[])].join(', ')}`
-        :`${placa} · ${mLabel}&#10;${d} · sem viagem`;
+        ?`${placa} · ${mLbl}&#10;${d}&#10;${dd.n} viagem(ns)${fut?' · planejado':''}&#10;${[...new Set(dd.ops||[])].join(', ')}`
+        :`${placa} · ${mLbl}&#10;${d} · sem viagem`;
       rowHTML+=`<td><div class="hm-cell ${cls}" style="${style}" onmouseenter="showTip(event,'${tip.replace(/'/g,"\'")}') " onmouseleave="hideTip()"></div></td>`;
     });
 
