@@ -141,7 +141,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
     </div>
   </div>
   <div class="hright">
-    <div class="period">Janeiro – Abril 2026 · Atualizado 27/04/2026 16:43</div>
+    <div class="period">Janeiro – Abril 2026 · Atualizado 27/04/2026 16:47</div>
     <div class="filters">AGR: 2341 · DH: 1500 · Total: 3841 viagens</div>
   </div>
 </div>
@@ -242,7 +242,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
   <div class="ph">
     <div>
       <div class="pt red">Carretas sem viagem · 2+ dias úteis consecutivos</div>
-      <div class="ps">contagem a partir de hoje (27/04/2026 16:43)</div>
+      <div class="ps">contagem a partir de hoje (27/04/2026 16:47)</div>
     </div>
     <span class="badge red" id="alertaBadge">0 placas</span>
   </div>
@@ -538,25 +538,44 @@ function buildCavalos(mes) {
 }
 
 function buildStatusCards(mes) {
-  let comEscala=0, semViagem2=0, manutencao=0;
+  let comEscala=0, semViagem2=[], manutencao=[];
   CAVALO_DATA.forEach(d => {
-    if((d.situacao||'').trim()==='MANUTENÇÃO') manutencao++;
-    const diasUtil = mes==='todos' ? d.dias_util : ((d.dias_mes||{})[mes]||0);
-    if(diasUtil>0) comEscala++;
+    const sit = (d.situacao||'').trim().toUpperCase();
+    if(sit==='MANUTENÇÃO') { manutencao.push(d); return; }
     const mp   = MAPA_CAVALO[d.cavalo]||{};
     const keys = Object.keys(mp).filter(k=>!mp[k].futuro).sort();
-    if(!keys.length){ semViagem2++; return; }
-    const ultima = keys[keys.length-1];
-    const cur = new Date(ultima+'T12:00:00'); cur.setDate(cur.getDate()+1);
-    const fim = new Date(hoje_iso+'T12:00:00');
     let seq=0;
-    while(cur<=fim){ const wd=cur.getDay(); if(wd>=1&&wd<=5) seq++; cur.setDate(cur.getDate()+1); }
-    if(seq>=2) semViagem2++;
+    if(keys.length){
+      const ultima = keys[keys.length-1];
+      const cur = new Date(ultima+'T12:00:00'); cur.setDate(cur.getDate()+1);
+      const fim = new Date(hoje_iso+'T12:00:00');
+      while(cur<=fim){ const wd=cur.getDay(); if(wd>=1&&wd<=5) seq++; cur.setDate(cur.getDate()+1); }
+    } else { seq=999; }
+    if(seq>=2) semViagem2.push({...d, seq});
+    else comEscala++;
   });
+
+  // Lista dos sem viagem
+  const listaSem = semViagem2.map(d=>
+    `<div style="margin-top:4px;font-size:9px;">
+      <span style="color:#c0392b;font-weight:700">⚠ ${d.cavalo}</span>
+      <span style="color:#575757"> · ${(d.motorista||'—').split(' ')[0]} ${(d.motorista||'').split(' ')[1]||''}</span>
+      <span style="color:#c0392b;font-size:8px"> · ${d.seq} dias</span>
+    </div>`
+  ).join('');
+
+  // Lista manutenção
+  const listaManut = manutencao.map(d=>
+    `<div style="margin-top:4px;font-size:9px;background:#fff3cd;padding:2px 6px;border-radius:3px;border-left:3px solid #d68910;">
+      <span style="color:#856404;font-weight:700">⚙ ${d.cavalo}</span>
+      <span style="color:#856404"> · ${(d.motorista||'—').split(' ')[0]} ${(d.motorista||'').split(' ')[1]||''}</span>
+    </div>`
+  ).join('');
+
   document.getElementById('statusCards').innerHTML =
     `<div class="scard"><div class="scard-num">${comEscala}</div><div class="scard-lbl">Com escala / em viagem</div></div>`+
-    `<div class="scard warn"><div class="scard-num">${semViagem2}</div><div class="scard-lbl">2+ dias sem viagem</div></div>`+
-    `<div class="scard amber"><div class="scard-num">${manutencao}</div><div class="scard-lbl">Manutenção</div></div>`;
+    `<div class="scard warn"><div class="scard-num">${semViagem2.length}</div><div class="scard-lbl">2+ dias sem viagem</div>${listaSem}</div>`+
+    `<div class="scard amber"><div class="scard-num">${manutencao.length}</div><div class="scard-lbl">Manutenção</div>${listaManut}</div>`;
 }
 
 function buildHeatmapCavalo(mes) {
