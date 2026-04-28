@@ -6,7 +6,7 @@
 <title>Contrail · Gestão Diária de Frota</title>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--verde:#00e5a0;--lime:#76B82A;--bg:#0f1117;--bg2:#1a1d26;--line:#2a3040;--ink:#e8eaf0;--ink2:#b0b8c8;--muted:#5a6478;--red:#ff5252;--amber:#FFB300;--unavail:#1e2130;--unavail-stripe:#252836;}
+:root{--verde:#00c98d;--lime:#76B82A;--bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;--line:#30363d;--ink:#c9d1d9;--ink2:#8b949e;--muted:#484f58;--red:#f85149;--amber:#e3b341;--unavail:#161b22;--unavail-stripe:#1c2333;--card-em:#0d2818;--card-sem:#2d0a0a;--card-manut:#2d1e00;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;font-size:12px;}
 .header-fixed{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:3px solid var(--verde);padding:8px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
@@ -14,26 +14,26 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
 .logo-area{display:flex;align-items:center;gap:10px;}
 .logo-img{height:36px;width:auto;}
 .logo-divider{width:1px;height:28px;background:var(--line);}
-.logo-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--verde);letter-spacing:.5px;}
+.logo-title{font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;color:var(--verde);letter-spacing:.5px;}
 .logo-sub{font-size:7px;color:var(--muted);margin-top:1px;}
 .hright{text-align:right;}
-.hright .period{font-size:8px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;font-family:'Montserrat',sans-serif;font-weight:600;}
+.hright .period{font-size:8px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;font-family:"Montserrat",sans-serif;font-weight:600;}
 .hright .filters{font-size:8px;color:var(--muted);line-height:1.5;}
-.sec{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--verde);margin:8px 0 6px;display:flex;align-items:center;gap:8px;font-family:'Montserrat',sans-serif;font-weight:700;}
+.sec{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--verde);margin:8px 0 6px;display:flex;align-items:center;gap:8px;font-family:"Montserrat",sans-serif;font-weight:700;}
 .sec::after{content:'';flex:1;height:1px;background:var(--line);}
 .month-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
 .mcard{border:1px solid var(--line);border-top:3px solid var(--verde);background:var(--bg2);padding:10px 12px;}
 .mcard.fev{border-top-color:var(--lime);}
 .mcard.mar{border-top-color:var(--amber);}
 .mcard.ytd{border-top-color:#4fc3f7;}
-.mcard-title{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--verde);padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid var(--line);}
+.mcard-title{font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;color:var(--verde);padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid var(--line);}
 .mcard.fev .mcard-title{color:var(--lime);}
 .mcard.mar .mcard-title{color:var(--amber);}
 .mcard.ytd .mcard-title{color:#1565c0;}
 .mcard-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid #f0f0f0;}
 .mcard-row:last-child{border-bottom:none;}
 .mcard-label{font-size:10px;color:var(--ink2);}
-.mcard-value{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--ink);}
+.mcard-value{font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;color:var(--ink);}
 .mcard-value.green{color:var(--verde);}
 .mcard-value.red{color:var(--red);}
 .mcard-value.muted{color:var(--muted);font-style:italic;font-weight:400;font-size:9px;}
@@ -42,20 +42,20 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
 .panel{background:var(--bg2);border:1px solid var(--line);border-top:3px solid var(--verde);padding:10px;margin-bottom:10px;}
 .panel.alert{border-top-color:var(--red);}
 .ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:6px;flex-wrap:wrap;}
-.pt{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--verde);}
+.pt{font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;color:var(--verde);}
 .pt.red{color:var(--red);}
 .ps{font-size:7px;color:var(--muted);margin-top:1px;}
-.badge{font-size:7px;letter-spacing:.5px;padding:2px 7px;border:1px solid var(--lime);color:var(--verde);background:#f2faeb;font-family:'Montserrat',sans-serif;font-weight:600;border-radius:2px;white-space:nowrap;}
+.badge{font-size:7px;letter-spacing:.5px;padding:2px 7px;border:1px solid var(--lime);color:var(--verde);background:#f2faeb;font-family:"Montserrat",sans-serif;font-weight:600;border-radius:2px;white-space:nowrap;}
 .badge.red{border-color:var(--red);color:var(--red);background:#fdf0ee;}
 .tbl{width:100%;border-collapse:collapse;}
-.tbl th{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--verde);text-align:left;padding:0 4px 5px;border-bottom:2px solid var(--verde);font-weight:700;font-family:'Montserrat',sans-serif;}
+.tbl th{font-size:7px;letter-spacing:1px;text-transform:uppercase;color:var(--verde);text-align:left;padding:0 4px 5px;border-bottom:2px solid var(--verde);font-weight:700;font-family:"Montserrat",sans-serif;}
 .tbl th.r{text-align:right;}
 .tbl td{padding:4px;font-size:9px;border-bottom:1px solid var(--line);vertical-align:middle;}
 .tbl td.r{text-align:right;}
 .tbl tr:last-child td{border-bottom:none;}
 .tbl tr:hover td{background:var(--bg2);}
 .tbl tr.alerta-row td{background:#1a1500;}
-.ptag{font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;color:var(--verde);letter-spacing:.3px;}
+.ptag{font-family:"Montserrat",sans-serif;font-size:10px;font-weight:700;color:var(--verde);letter-spacing:.3px;}
 .mbw{display:flex;align-items:center;gap:4px;}
 .mbt{flex:1;height:4px;background:var(--line);border-radius:2px;overflow:hidden;}
 .mbf{height:100%;border-radius:2px;}
@@ -64,19 +64,19 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
 .bar-label{font-size:8px;color:var(--ink2);width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .bar-track{flex:1;height:11px;background:var(--line);border-radius:2px;overflow:hidden;}
 .bar-fill{height:100%;background:var(--verde);border-radius:2px;}
-.bar-val{font-size:8px;font-family:'Montserrat',sans-serif;font-weight:700;color:var(--ink);width:32px;text-align:right;}
+.bar-val{font-size:8px;font-family:"Montserrat",sans-serif;font-weight:700;color:var(--ink);width:32px;text-align:right;}
 .tabs{display:flex;gap:3px;flex-wrap:wrap;}
-.tab{padding:2px 10px;font-size:8px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:.5px;border:1px solid var(--line);cursor:pointer;transition:all .15s;color:var(--muted);background:var(--bg2);}
+.tab{padding:2px 10px;font-size:8px;font-family:"Montserrat",sans-serif;font-weight:700;letter-spacing:.5px;border:1px solid var(--line);cursor:pointer;transition:all .15s;color:var(--muted);background:var(--bg2);}
 .tab.active{background:var(--verde);color:#fff;border-color:var(--verde);}
 .tab:hover:not(.active){background:var(--bg2);color:var(--verde);}
 .hm-rank-grid{display:grid;grid-template-columns:65% 35%;gap:10px;align-items:start;}
 .hm-outer{overflow-x:hidden;width:100%;}
 .hm-table{border-collapse:collapse;width:100%;table-layout:fixed;}
-.hm-table th{position:sticky;top:0;background:var(--bg2);z-index:10;padding:0 1px 3px;font-family:'Montserrat',sans-serif;font-size:6px;font-weight:700;color:var(--muted);text-align:center;border-bottom:1px solid var(--verde);white-space:nowrap;overflow:hidden;}
+.hm-table th{position:sticky;top:0;background:var(--bg2);z-index:10;padding:0 1px 3px;font-family:"Montserrat",sans-serif;font-size:6px;font-weight:700;color:var(--muted);text-align:center;border-bottom:1px solid var(--verde);white-space:nowrap;overflow:hidden;}
 .hm-table th.plate-th{left:0;z-index:20;text-align:left;padding-right:6px;width:160px;min-width:160px;}
 .hm-table td{padding:1px;vertical-align:top;}
 .hm-table td.plate-td{position:sticky;left:0;background:var(--bg2);z-index:5;padding-right:5px;white-space:nowrap;width:160px;min-width:160px;}
-.plate-label{display:flex;align-items:center;gap:3px;font-size:8px;font-weight:600;font-family:'Montserrat',sans-serif;color:var(--ink2);padding:1px 0;line-height:1;}
+.plate-label{display:flex;align-items:center;gap:3px;font-size:8px;font-weight:600;font-family:"Montserrat",sans-serif;color:var(--ink2);padding:1px 0;line-height:1;}
 .plate-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
 .plate-motorista{font-size:6.5px;color:var(--muted);font-weight:400;max-width:105px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .plate-manut{font-size:6px;color:var(--amber);font-weight:700;letter-spacing:.3px;}
@@ -91,7 +91,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
 .hm-cell.hoje-col{outline:2px solid var(--amber);outline-offset:-1px;}
 .hm-group-label td{
   background:#111520!important;
-  font-family:'Montserrat',sans-serif;
+  font-family:"Montserrat",sans-serif;
   font-size:7px;font-weight:700;
   color:var(--verde);
   letter-spacing:1.5px;
@@ -101,7 +101,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
   border-bottom:1px solid var(--line)!important;
 }
 .date-hdr{display:flex;flex-direction:column;align-items:center;padding:0 0 2px;}
-.date-num{font-family:'Montserrat',sans-serif;font-size:7px;font-weight:700;color:var(--ink);line-height:1;}
+.date-num{font-family:"Montserrat",sans-serif;font-size:7px;font-weight:700;color:var(--ink);line-height:1;}
 .date-dow{font-size:5.5px;color:var(--muted);line-height:1;}
 .date-hdr.sunday .date-num,.date-hdr.sunday .date-dow{color:var(--red);}
 .date-hdr.futuro .date-num,.date-hdr.futuro .date-dow{color:#1565c0;}
@@ -117,16 +117,43 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
 #tooltip.show{opacity:1;}
 .rank-panel{background:var(--bg2);border:1px solid var(--line);border-top:3px solid var(--verde);padding:10px;overflow-y:auto;max-height:900px;}
 .view-sw{display:flex;gap:5px;margin-bottom:8px;}
-.view-btn{padding:3px 16px;font-size:9px;font-family:'Montserrat',sans-serif;font-weight:700;letter-spacing:.5px;border:1.5px solid var(--verde);cursor:pointer;color:var(--verde);background:var(--bg);transition:all .15s;}
+.view-btn{padding:3px 16px;font-size:9px;font-family:"Montserrat",sans-serif;font-weight:700;letter-spacing:.5px;border:1.5px solid var(--verde);cursor:pointer;color:var(--verde);background:var(--bg);transition:all .15s;}
 .view-btn.active{background:var(--verde);color:#fff;}
 .status-cards{display:flex;gap:8px;margin-bottom:8px;}
 .scard{flex:1;border:1px solid var(--line);border-top:3px solid var(--verde);padding:8px 12px;background:var(--bg);}
 .scard.warn{border-top-color:var(--red);}
 .scard.amber{border-top-color:var(--amber);}
-.scard-num{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;color:var(--verde);}
+.scard-num{font-family:"Montserrat",sans-serif;font-size:24px;font-weight:800;color:var(--verde);}
 .scard.warn .scard-num{color:var(--red);}
 .scard.amber .scard-num{color:var(--amber);}
-.scard-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-family:'Montserrat',sans-serif;font-weight:600;margin-top:2px;}
+.scard-lbl{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-family:"Montserrat",sans-serif;font-weight:600;margin-top:2px;}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
+.kpi-card{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:14px 16px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi-card.em-viagem::before{background:var(--verde);}
+.kpi-card.sem-viagem::before{background:var(--red);}
+.kpi-card.manutencao::before{background:var(--amber);}
+.kpi-card.total::before{background:#4493f8;}
+.kpi-icon{font-size:22px;margin-bottom:4px;}
+.kpi-num{font-family:"Montserrat",sans-serif;font-size:32px;font-weight:800;line-height:1;}
+.kpi-card.em-viagem .kpi-num{color:var(--verde);}
+.kpi-card.sem-viagem .kpi-num{color:var(--red);}
+.kpi-card.manutencao .kpi-num{color:var(--amber);}
+.kpi-card.total .kpi-num{color:#4493f8;}
+.kpi-lbl{font-size:9px;color:var(--ink2);text-transform:uppercase;letter-spacing:.8px;font-family:"Montserrat",sans-serif;font-weight:600;margin-top:4px;}
+.kpi-badge{display:inline-block;font-size:8px;padding:2px 8px;border-radius:10px;font-weight:700;margin-top:6px;}
+.kpi-badge.green{background:rgba(0,201,141,.15);color:var(--verde);}
+.kpi-badge.red{background:rgba(248,81,73,.15);color:var(--red);}
+.kpi-badge.amber{background:rgba(227,179,65,.15);color:var(--amber);}
+.kpi-badge.blue{background:rgba(68,147,248,.15);color:#4493f8;}
+.alertas-op{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.alerta-item{display:flex;align-items:center;gap:10px;}
+.alerta-icon{font-size:18px;flex-shrink:0;}
+.alerta-val{font-family:"Montserrat",sans-serif;font-size:18px;font-weight:800;}
+.alerta-desc{font-size:8px;color:var(--ink2);margin-top:1px;}
+.alerta-sub{font-size:8px;color:var(--muted);}
+.dias-col{text-align:right;font-family:"Montserrat",sans-serif;font-size:10px;font-weight:700;color:var(--verde);padding:0 4px;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -141,15 +168,14 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
     </div>
   </div>
   <div class="hright">
-    <div class="period">Janeiro – Abril 2026 · Atualizado 28/04/2026 12:10</div>
+    <div class="period">Janeiro – Abril 2026 · Atualizado 28/04/2026 12:21</div>
     <div class="filters">AGR: 2344 · DH: 1502 · Total: 3846 viagens</div>
   </div>
 </div>
 
 <div class="wrap">
-<div class="sec">Resumo por Mês</div>
-<div class="month-grid" id="monthCards"></div>
-
+<div class="kpi-grid" id="kpiCards"></div>
+<div class="alertas-op" id="alertasOp"></div>
 <div class="sec">Mapa de Utilização</div>
 <div class="view-sw">
   <button class="view-btn active" id="btn-carretas" onclick="switchView('carretas')">Carretas</button>
@@ -242,7 +268,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Open Sans',sans-serif;fo
   <div class="ph">
     <div>
       <div class="pt red">Carretas sem viagem · 2+ dias úteis consecutivos</div>
-      <div class="ps">contagem a partir de hoje (28/04/2026 12:10)</div>
+      <div class="ps">contagem a partir de hoje (28/04/2026 12:21)</div>
     </div>
     <span class="badge red" id="alertaBadge">0 placas</span>
   </div>
@@ -343,8 +369,7 @@ function renderCard(r, cls) {
     <div class="mcard-row"><span class="mcard-label">Economia vs Mercado</span><span class="mcard-value ${eCls}">${fmt(r.economia)}</span></div>
   </div>`;
 }
-Object.entries(RESUMO).forEach(([mes, r]) => { grid.innerHTML += renderCard(r, cores[mes]||''); });
-grid.innerHTML += renderCard(YTD, 'ytd');
+if(grid) { Object.entries(RESUMO).forEach(([mes, r]) => { grid.innerHTML += renderCard(r, cores[mes]||''); }); grid.innerHTML += renderCard(YTD, 'ytd'); }
 
 // ── Alertas ────────────────────────────────────────
 document.getElementById('alertaBadge').textContent = ALERTAS.length + ' placas';
@@ -376,7 +401,7 @@ function buildHeatmap(mes) {
     const cls=eh_hoje?'hoje':wd===0?'sunday':fut?'futuro':'';
     thead+=`<th><div class="date-hdr${cls?' '+cls:''}"><span class="date-num">${dt.getDate()}</span><span class="date-dow">${dow[wd]}</span></div></th>`;
   });
-  thead += '</tr></thead>';
+  thead += '<th style="font-size:7px;color:var(--muted);font-family:'Montserrat',sans-serif;text-align:right;padding-right:4px;">DIAS</th></tr></thead>';
   table.innerHTML = thead;
 
   const tbody    = document.createElement('tbody');
@@ -435,9 +460,10 @@ function buildHeatmap(mes) {
       const tip=dd
         ?`${placa} · ${mLbl}${emManut?' · MANUTENÇÃO':''}&#10;${d}&#10;${dd.n>0?dd.n+' viagem(ns)':'em trânsito'}${fut?' · planejado':''}${trackLabel}&#10;${[...new Set(dd.ops||[])].join(', ')}`
         :`${placa} · ${mLbl}${emManut?' · MANUTENÇÃO':''}&#10;${d} · sem viagem`;
-      rowHTML+=`<td><div class="hm-cell ${cls}" style="${style}" onmouseenter="showTip(event,'${tip.replace(/'/g,"\'")}') " onmouseleave="hideTip()"></div></td>`;
-    });
+      rowHTML+=`<td><div class="hm-cell ${cls}" style="${style}" onmouseenter="showTip(event,'${tip.replace(/'/g,"\\'")}')" onmouseleave="hideTip()"></div></td>`;
 
+    const diasPlaca = Object.keys(MAPA[placa]||{}).filter(d=>!((MAPA[placa]||{})[d]||{}).futuro).length;
+    rowHTML += `<td class="dias-col">${diasPlaca}</td>`;
     row.innerHTML = rowHTML;
     tbody.appendChild(row);
   });
@@ -502,7 +528,7 @@ function buildRanking(mes) {
     const sitTag = sit === 'MANUTENÇÃO' ? `<span style="font-size:6px;color:var(--amber);font-weight:700"> ⚙</span>` : '';
     const fmtDesc = v => v > 0 ? 'R$ ' + v.toLocaleString('pt-BR') : '—';
     tbR.innerHTML += `<tr>
-      <td style="text-align:center;font-family:'Montserrat',sans-serif;font-size:${rank<=3?'12px':'9px'};font-weight:700;color:var(--ink2)">${medal}</td>
+      <td style="text-align:center;font-family:"Montserrat",sans-serif;font-size:${rank<=3?'12px':'9px'};font-weight:700;color:var(--ink2)">${medal}</td>
       <td><span class="ptag" style="${alerta?'color:var(--red)':''}">
         ${d.plate}${sitTag}<br>
         <span style="font-size:6.5px;color:var(--muted);font-weight:400">${motLabel(d.plate)}</span>
@@ -605,7 +631,7 @@ function buildHeatmapCavalo(mes) {
       <div class="plate-label">
         <div class="plate-dot" style="background:${emManut?'#d68910':'#007351'}"></div>
         <div style="display:flex;flex-direction:column;gap:0;">
-          <span style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700">${cavalo}</span>
+          <span style="font-family:"Montserrat",sans-serif;font-size:9px;font-weight:700">${cavalo}</span>
           <span class="plate-motorista">${mot}</span>
           ${emManut?'<span class="plate-manut">⚙ MANUTENÇÃO</span>':''}
         </div>
@@ -685,6 +711,7 @@ function buildTabs() {
       mesSel = m;
       document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
+      buildKPICards(m);
       buildHeatmap(m);
       buildRanking(m);
       if(viewAtual === 'cavalos') buildCavalos(m);
@@ -713,8 +740,97 @@ GRUPO.forEach(g => {
   </div>`;
 });
 
+// ── KPI Cards ─────────────────────────────────────────────────────
+function buildKPICards(mes) {
+  const r   = mes === 'todos' ? YTD : (RESUMO[mes] || YTD);
+  const disp = r.dias_disp || 0;
+  const util = r.dias_util || 0;
+  const pct  = disp > 0 ? Math.round(util/disp*100) : 0;
+
+  // Conta status das carretas
+  let emViagem=0, semViagem2=0, manutencao=0;
+  PLACAS.forEach(p => {
+    const sit = (SITUACAO[p]||'').trim();
+    if(sit === 'MANUTENÇÃO') { manutencao++; return; }
+    const mp   = MAPA[p]||{};
+    const keys = Object.keys(mp).filter(k=>!mp[k].futuro).sort();
+    let seq=0;
+    if(keys.length){
+      const ultima = keys[keys.length-1];
+      const cur = new Date(ultima+'T12:00:00'); cur.setDate(cur.getDate()+1);
+      const fim = new Date(hoje_iso+'T12:00:00');
+      while(cur<=fim){ const wd=cur.getDay(); if(wd>=1&&wd<=5) seq++; cur.setDate(cur.getDate()+1); }
+    }
+    if(seq>=2) semViagem2++;
+    else emViagem++;
+  });
+
+  document.getElementById('kpiCards').innerHTML =
+    `<div class="kpi-card em-viagem">
+      <div class="kpi-icon">🚛</div>
+      <div class="kpi-num">${emViagem}</div>
+      <div class="kpi-lbl">Com escala / Em viagem</div>
+      <span class="kpi-badge green">${Math.round(emViagem/PLACAS.length*100)}% da frota</span>
+    </div>
+    <div class="kpi-card sem-viagem">
+      <div class="kpi-icon">⚠️</div>
+      <div class="kpi-num">${semViagem2}</div>
+      <div class="kpi-lbl">2+ dias sem viagem</div>
+      <span class="kpi-badge red">Atenção</span>
+    </div>
+    <div class="kpi-card manutencao">
+      <div class="kpi-icon">🔧</div>
+      <div class="kpi-num">${manutencao}</div>
+      <div class="kpi-lbl">Em Manutenção</div>
+      <span class="kpi-badge amber">Aguardando</span>
+    </div>
+    <div class="kpi-card total">
+      <div class="kpi-icon">🗂️</div>
+      <div class="kpi-num">${PLACAS.length}</div>
+      <div class="kpi-lbl">Total da Frota</div>
+      <span class="kpi-badge blue">${pct}% utilização</span>
+    </div>`;
+
+  // Alertas operacionais
+  const topPlaca = RANKING.slice().sort((a,b)=>b.uso_pct-a.uso_pct)[0];
+  document.getElementById('alertasOp').innerHTML =
+    `<div class="alerta-item">
+      <div class="alerta-icon">🔴</div>
+      <div>
+        <div class="alerta-val" style="color:var(--red)">${semViagem2}</div>
+        <div class="alerta-desc">carreta(s) parada(s) há mais de 2 dias</div>
+        <div class="alerta-sub">Ver detalhes ↓</div>
+      </div>
+    </div>
+    <div class="alerta-item">
+      <div class="alerta-icon">🟡</div>
+      <div>
+        <div class="alerta-val" style="color:var(--amber)">${manutencao}</div>
+        <div class="alerta-desc">carretas em manutenção</div>
+        <div class="alerta-sub">Aguardando retorno</div>
+      </div>
+    </div>
+    <div class="alerta-item">
+      <div class="alerta-icon">📈</div>
+      <div>
+        <div class="alerta-val" style="color:var(--verde)">${pct}%</div>
+        <div class="alerta-desc">utilização média da frota</div>
+        <div class="alerta-sub">${mes==='todos'?'YTD':LABELS_L[mes]}</div>
+      </div>
+    </div>
+    <div class="alerta-item">
+      <div class="alerta-icon">🏆</div>
+      <div>
+        <div class="alerta-val" style="color:#4493f8">${topPlaca?topPlaca.plate:'—'}</div>
+        <div class="alerta-desc">maior utilização</div>
+        <div class="alerta-sub">${topPlaca?topPlaca.uso_pct+'% no período':''}</div>
+      </div>
+    </div>`;
+}
+
 // ── Init ───────────────────────────────────────────
 buildTabs();
+buildKPICards(MES_ATUAL);
 buildHeatmap(MES_ATUAL);
 buildRanking(MES_ATUAL);
 </script>
