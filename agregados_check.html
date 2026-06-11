@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contrail · Check de Agregados</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --verde:#007351; --verde-esc:#00553c; --lime:#76B82A; --cinza:#575757;
+  --bg:#f3f5f4; --card:#ffffff; --borda:#e2e8e5; --txt:#2b332f; --txt2:#6d7a74;
+  --amarelo:#e3a008; --vermelho:#c0392b; --azul:#1e6091;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt)}
+
+header{background:linear-gradient(135deg,var(--verde-esc) 0%,var(--verde) 55%,#0d8a64 100%);
+  color:#fff;padding:22px 28px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+header .ttl h1{font-size:21px;font-weight:700;letter-spacing:.3px}
+header .ttl p{font-size:12.5px;opacity:.85;margin-top:3px}
+header .meta{text-align:right;font-size:12px;opacity:.9}
+header .meta a{color:#d8f0c2;text-decoration:none;font-weight:600;margin-left:14px}
+header .meta a:hover{text-decoration:underline}
+.badge-lime{display:inline-block;background:var(--lime);color:#fff;font-size:10.5px;font-weight:700;
+  padding:2px 10px;border-radius:20px;letter-spacing:.6px;margin-bottom:5px}
+
+main{max-width:1480px;margin:0 auto;padding:20px}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:8px}
+.kpi{background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:13px 14px;
+  border-top:3px solid var(--verde);transition:transform .15s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi.lime{border-top-color:var(--lime)}
+.kpi.amarelo{border-top-color:var(--amarelo)}
+.kpi.vermelho{border-top-color:var(--vermelho)}
+.kpi.azul{border-top-color:var(--azul)}
+.kpi .lab{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px}
+.kpi .val{font-size:24px;font-weight:800;color:var(--verde-esc);margin-top:4px;white-space:nowrap}
+.kpi.amarelo .val{color:#a07000}
+.kpi.vermelho .val{color:var(--vermelho)}
+.kpi.azul .val{color:var(--azul)}
+.kpi .sub{font-size:10px;color:var(--txt2);margin-top:2px}
+
+/* Seções */
+.sec-ttl{display:flex;align-items:center;gap:10px;margin:24px 0 12px;flex-wrap:wrap}
+.sec-ttl .bar{width:5px;height:20px;background:var(--lime);border-radius:3px}
+.sec-ttl h2{font-size:15.5px;font-weight:700;color:var(--verde-esc);text-transform:uppercase;letter-spacing:.7px}
+.sec-ttl small{color:var(--txt2);font-size:11.5px;font-weight:500}
+.sec-ttl .alert-badge{background:var(--vermelho);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:11px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:15px;margin-bottom:8px}
+.card-header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.card-header h3{font-size:13.5px;font-weight:700;color:var(--txt)}
+.card-tools{display:flex;gap:8px;flex-wrap:wrap}
+.card-tools input,.card-tools select{border:1.5px solid var(--borda);border-radius:7px;
+  padding:6px 10px;font-size:12px;font-weight:600;color:var(--txt);background:#fff;min-width:140px}
+.card-tools input:focus,.card-tools select:focus{outline:none;border-color:var(--verde)}
+.btn{border:none;border-radius:7px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;
+  display:flex;gap:6px;align-items:center}
+.btn-excel{background:var(--verde);color:#fff;box-shadow:0 3px 10px rgba(0,115,81,.3)}
+.btn-excel:hover{background:var(--verde-esc)}
+.count-info{font-size:11.5px;color:var(--txt2);font-weight:600}
+
+/* Tabela */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#f0f4f2;color:var(--verde-esc);font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;
+  padding:9px 10px;text-align:left;position:sticky;top:0;cursor:pointer;user-select:none}
+th.num,td.num{text-align:right}
+th:hover{background:#e3ece7}
+th.asc::after{content:' ▲';font-size:9px;color:var(--lime)}
+th.desc::after{content:' ▼';font-size:9px;color:var(--lime)}
+td{padding:8px 10px;border-bottom:1px solid #eef1ef;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px}
+tbody tr:hover{background:#f4f9f6}
+.tbl-wrap{max-height:520px;overflow:auto;border-radius:8px;border:1px solid var(--borda)}
+
+/* Status pill */
+.pill{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:11px;letter-spacing:.3px}
+.pill.rodando{background:#d4f0dd;color:#0a6c2e}
+.pill.escala{background:#eaf6d3;color:#3b6e0e}
+.pill.manut{background:#fde7b5;color:#8a5800}
+.pill.inativo{background:#fbd5d1;color:#a02520}
+.pill.sem-reg{background:#e0e3e1;color:#576058}
+.pill.alerta{background:#fde7b5;color:#8a5800}
+.pill.dh{background:#d6e6f2;color:#1c5582}
+
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 14px;font-size:11.5px;color:var(--txt2)}
+.legend .item{display:flex;gap:5px;align-items:center}
+.legend .dot{width:11px;height:11px;border-radius:3px}
+.legend .dot.rodando{background:#0a6c2e}
+.legend .dot.escala{background:#76B82A}
+.legend .dot.manut{background:var(--amarelo)}
+.legend .dot.inativo{background:var(--vermelho)}
+.legend .dot.sem-reg{background:#9aa39d}
+
+.muted{color:var(--txt2);font-style:italic;font-size:11.5px}
+footer{text-align:center;font-size:11px;color:var(--txt2);padding:24px}
+.empty{padding:30px;text-align:center;color:var(--txt2);font-size:13px}
+.empty .emoji{font-size:32px;display:block;margin-bottom:6px}
+
+@media(max-width:700px){
+  .card-tools input,.card-tools select{min-width:auto;width:100%}
+  td{max-width:200px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="ttl">
+    <span class="badge-lime">CHECK DIÁRIO · AGREGADOS</span>
+    <h1>Conferência de Motoristas e Carretas</h1>
+    <p>Cruzamento da escala (PROC) com a base operacional · últimos 30 dias</p>
+  </div>
+  <div class="meta">
+    <div>Atualizado em <b>11/06/2026 17:09</b></div>
+    <div style="margin-top:6px">
+      <a href="index.html">← Painel</a>
+      <a href="analitico.html">Analítico</a>
+      <a href="faturamento.html">Faturamento</a>
+      <a href="alocacao.html">Alocação →</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── Cards de resumo ──────────────────── -->
+  <div class="sec-ttl"><div class="bar"></div><h2>Resumo</h2><small>cruzamento PROC × frota própria</small></div>
+  <div class="kpi-grid" id="kpis-top"></div>
+
+  <!-- ── Carretas FORA da lista ──────────── -->
+  <div class="sec-ttl">
+    <div class="bar"></div><h2>Carretas FORA da lista</h2>
+    <small>aparecem rodando como AGREGADOS/CONTRAIL DH mas não estão no PROC</small>
+    <span class="alert-badge" id="badge-car">0</span>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h3>Detecções nos últimos 30 dias</h3>
+      <div class="card-tools">
+        <input type="text" id="busca-car" placeholder="🔎 buscar placa, motorista...">
+        <span class="count-info" id="count-car"></span>
+        <button class="btn btn-excel" onclick="exportarSecao('car')">⬇ Excel</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table id="tb-car"></table></div>
+  </div>
+
+  <!-- ── Motoristas FORA da lista ───────── -->
+  <div class="sec-ttl">
+    <div class="bar"></div><h2>Motoristas FORA da lista</h2>
+    <small>rodaram como AGREGADOS/CONTRAIL DH mas não estão no PROC</small>
+    <span class="alert-badge" id="badge-mot">0</span>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h3>Detecções nos últimos 30 dias</h3>
+      <div class="card-tools">
+        <input type="text" id="busca-mot" placeholder="🔎 buscar motorista, carreta...">
+        <span class="count-info" id="count-mot"></span>
+        <button class="btn btn-excel" onclick="exportarSecao('mot')">⬇ Excel</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table id="tb-mot"></table></div>
+  </div>
+
+  <!-- ── Status de motoristas do PROC ───── -->
+  <div class="sec-ttl"><div class="bar"></div><h2>Status dos motoristas do PROC</h2>
+    <small>todos os 53 motoristas escalados, com última atividade</small></div>
+
+  <div class="legend">
+    <span class="item"><span class="dot rodando"></span>Rodando hoje</span>
+    <span class="item"><span class="dot escala"></span>Em escala (≤1 dia útil)</span>
+    <span class="item"><span class="dot manut"></span>Possível manutenção (2–4 dias)</span>
+    <span class="item"><span class="dot inativo"></span>Inativo (5+ dias)</span>
+    <span class="item"><span class="dot sem-reg"></span>Sem registro</span>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Conferência diária</h3>
+      <div class="card-tools">
+        <input type="text" id="busca-proc" placeholder="🔎 buscar motorista, placa...">
+        <select id="filtro-situ">
+          <option value="">Todas as situações</option>
+        </select>
+        <select id="filtro-status">
+          <option value="">Todos os status</option>
+          <option value="rodando">Rodando hoje</option>
+          <option value="escala">Em escala</option>
+          <option value="manut">Possível manutenção</option>
+          <option value="inativo">Inativo</option>
+          <option value="sem-reg">Sem registro</option>
+        </select>
+        <span class="count-info" id="count-proc"></span>
+        <button class="btn btn-excel" onclick="exportarSecao('proc')">⬇ Excel</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table id="tb-proc"></table></div>
+  </div>
+
+</main>
+
+<footer>Contrail Logística S.A. · Check de Agregados · gerado por painel_carreta_v3</footer>
+
+<script>
+const PROC   = [{"nome":"(CARRETA DO ACIDENTE)","situacao":"MANUTENÇÃO","cavalo":"FZM9D60","carreta":"RXR4C68","ult_viagem":"22/05/2026","dias_parado":14,"status_rotulo":"INATIVO","status_cls":"inativo","viagens_30d":9},{"nome":"A - DISPONÍVEL","situacao":"ATIVO","cavalo":"EGK8I28","carreta":"TIQ6E48","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":29},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"DAH7E10","carreta":"FVW5H48","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":22},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"JSL5A06","carreta":"MIK3B49","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":24},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"AOT7362","carreta":"TLQ0A67","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":23},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"RDZ8G07","carreta":"ECU8I05","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":22},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"QJX8J15","carreta":"UDB5J64","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":24},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"HIA4I74","carreta":"UDT4E94","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":24},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"DPF6675","carreta":"UDU4C53","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":24},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"MGQ3E27","carreta":"UDZ8A17","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":20},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"HEH0001","carreta":"UEF2G97","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":22},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"AUD6I64","carreta":"UEN4I66","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":20},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"MRR5B58","carreta":"UET4A12","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":22},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"AKX0B77","carreta":"UEZ9C76","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":23},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"JQI0F17","carreta":"FXV4J45","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":17},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"EFV7G75","carreta":"TJK1G40","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":22},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"CUE0H30","carreta":"MKT3E52","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":18},{"nome":"LUCIANO DE OLIVEIRA","situacao":"ATIVO","cavalo":"EFV7G75","carreta":"MGV5J57","ult_viagem":"11/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":2},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL","cavalo":"FQH7J50","carreta":"JBC7G16","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":18},{"nome":"A - ESCRAVO UNIMETAL","situacao":"UNIMETAL SOROCABA","cavalo":"MGQ3E27","carreta":"ELO8104","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":23},{"nome":"A - ESCRAVO UNIMETAL - COSMO","situacao":"UNIMETAL COSMOPOLIS","cavalo":"PXG1H70","carreta":"TKJ2G80","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":19},{"nome":"A - ESCRAVO UNIMETAL - COSMO","situacao":"UNIMETAL COSMOPOLIS","cavalo":"CUB3J73","carreta":"FEI2950","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":23},{"nome":"A - ESCRAVO UNIMETAL - COSMO","situacao":"UNIMETAL COSMOPOLIS","cavalo":"ELW6A91","carreta":"FEI4791","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":21},{"nome":"A - ESCRAVO UNIMETAL - COSMO","situacao":"UNIMETAL COSMOPOLIS","cavalo":"DJF3A86","carreta":"RXR4C78","ult_viagem":"11/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":7},{"nome":"A - ESCRAVO UNIMETAL - COSMO","situacao":"UNIMETAL COSMOPOLIS","cavalo":"FEH5A30","carreta":"FCE3F33","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":21},{"nome":"A- DROP LG","situacao":"ATIVO","cavalo":"—","carreta":"EPU9192","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":20},{"nome":"A- DROP LG","situacao":"ATIVO","cavalo":"—","carreta":"DAJ8765","ult_viagem":"11/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":26},{"nome":"A- DROP LG","situacao":"ATIVO","cavalo":"—","carreta":"DJB6139","ult_viagem":"11/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":21},{"nome":"A- DROP LG","situacao":"ATIVO","cavalo":"—","carreta":"FOR0H21","ult_viagem":"11/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":22},{"nome":"A- DROP LG","situacao":"NAN","cavalo":"—","carreta":"FEI2953","ult_viagem":"11/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":13},{"nome":"CLAYTON GUILHERME DOS SANTOS","situacao":"ATIVO","cavalo":"PLO0F22","carreta":"FMY0B84","ult_viagem":"11/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":37},{"nome":"CLODOALDO HENRIQUE DE PAULA","situacao":"ATIVO","cavalo":"DPE0J02","carreta":"FOL4F13","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":69},{"nome":"DEVANIR POLIZEL","situacao":"UNIMETAL SOROCABA","cavalo":"QJX8J15","carreta":"KZK6J73","ult_viagem":"08/06/2026","dias_parado":3,"status_rotulo":"POSSÍVEL MANUTENÇÃO","status_cls":"manut","viagens_30d":45},{"nome":"EDUARDO POLIZEL","situacao":"ATIVO","cavalo":"QJX8J15","carreta":"GJM7E76","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":52},{"nome":"ELSON PEREIRA DE ANDRADE","situacao":"ATIVO","cavalo":"DMQ9292","carreta":"JBC7G15","ult_viagem":"03/06/2026","dias_parado":6,"status_rotulo":"INATIVO","status_cls":"inativo","viagens_30d":13},{"nome":"FLAVIO BINATTO/FABIO","situacao":"ATIVO","cavalo":"AVI2A18","carreta":"FVF7D57","ult_viagem":"28/05/2026","dias_parado":10,"status_rotulo":"INATIVO","status_cls":"inativo","viagens_30d":6},{"nome":"GERONIMO GOMES DA SILVA","situacao":"ATIVO","cavalo":"AVG5A95","carreta":"RLM6J06","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":31},{"nome":"GERSON DA SILVA MOREIRA","situacao":"ATIVO","cavalo":"NRR0E99","carreta":"MJU7F43","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":20},{"nome":"JEFFERSON MATIAS DE JESUS","situacao":"ATIVO","cavalo":"—","carreta":"TKC4C10","ult_viagem":"11/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":39},{"nome":"JOSE FABIANO DA SILVA","situacao":"ATIVO","cavalo":"KXZ8J23","carreta":"CUA5B52","ult_viagem":"18/05/2026","dias_parado":18,"status_rotulo":"INATIVO","status_cls":"inativo","viagens_30d":13},{"nome":"JOSE LUIZ BOSCHERO","situacao":"ATIVO","cavalo":"AQN3C59","carreta":"FUO8C96","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":18},{"nome":"JOSE AUGUSTO RIBEIRO DA SILVA","situacao":"ATIVO","cavalo":"FEJ6D59","carreta":"FZI9C75","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":33},{"nome":"JOSENALDO DOS SANTOS OLIVEIRA","situacao":"ATIVO","cavalo":"ABZ5A09","carreta":"FOG1C83","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":31},{"nome":"JOZUE JORGE","situacao":"ATIVO","cavalo":"—","carreta":"JBC7G14","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":38},{"nome":"(CARRETA DO ACIDENTE)","situacao":"UNIMETAL COSMOPOLIS","cavalo":"CUC2I35","carreta":"GHS2J36","ult_viagem":"03/06/2026","dias_parado":6,"status_rotulo":"INATIVO","status_cls":"inativo","viagens_30d":14},{"nome":"LUIZ DE JESUS TRINDADE","situacao":"UNIMETAL SOROCABA","cavalo":"HEH0001","carreta":"AJW7C88","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":52},{"nome":"MARCOS FERREIRA GARCIA","situacao":"ATIVO","cavalo":"—","carreta":"TLI7A23","ult_viagem":"03/06/2026","dias_parado":6,"status_rotulo":"INATIVO","status_cls":"inativo","viagens_30d":8},{"nome":"MARCOS ROBERTO BARBOSA","situacao":"ATIVO","cavalo":"KPK4C12","carreta":"ELU9G06","ult_viagem":"22/05/2026","dias_parado":14,"status_rotulo":"INATIVO","status_cls":"inativo","viagens_30d":22},{"nome":"MICHAEL FERNANDO PEREIRA","situacao":"ATIVO","cavalo":"HTP1A65","carreta":"FOS4I45","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":82},{"nome":"PAULO CESAR MOREIRA","situacao":"UNIMETAL SOROCABA","cavalo":"AUD6I64","carreta":"TIT5J26","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":40},{"nome":"PAULO EDUARDO DE MORAIS","situacao":"ATIVO","cavalo":"MIO9A92","carreta":"FOS5A12","ult_viagem":"08/06/2026","dias_parado":3,"status_rotulo":"POSSÍVEL MANUTENÇÃO","status_cls":"manut","viagens_30d":11},{"nome":"RAFAEL DA FONSECA BREXO","situacao":"ATIVO","cavalo":"FEH5A30","carreta":"DBC5I84","ult_viagem":"15/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":58},{"nome":"REGINALDO APARECIDO ALVES","situacao":"ATIVO","cavalo":"EZU5G31","carreta":"TIS3I05","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":35},{"nome":"REINALDO MANOEL DE SOUZA","situacao":"ATIVO","cavalo":"—","carreta":"LMN8I82","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":31},{"nome":"RICARDO APARECIDO VICENTE","situacao":"ATIVO","cavalo":"ASO2F76","carreta":"GIX0B37","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":22},{"nome":"ROMILDO MARCOS DIAS","situacao":"UNIMETAL COSMOPOLIS","cavalo":"DJC8J66","carreta":"GHO3J47","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":22},{"nome":"SERGIO PEREIRA DUTRA","situacao":"ATIVO","cavalo":"DPB2E34","carreta":"FUC2H96","ult_viagem":"13/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":25},{"nome":"THIAGO CARLOS DA SILVA","situacao":"ATIVO","cavalo":"MJL8H14","carreta":"TKQ6C17","ult_viagem":"04/06/2026","dias_parado":5,"status_rotulo":"INATIVO","status_cls":"inativo","viagens_30d":52},{"nome":"VALDIR EVANGELISTA","situacao":"ATIVO","cavalo":"EGK9958","carreta":"FZG7J46","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":38},{"nome":"WILLIAM DE PAULA MORAES","situacao":"UNIMETAL COSMOPOLIS","cavalo":"ELW6A91","carreta":"RLE2F76","ult_viagem":"12/06/2026","dias_parado":0,"status_rotulo":"RODANDO HOJE","status_cls":"rodando","viagens_30d":23}];
+const CARFORA= [{"placa":"EMU0995","motoristas":"GUILHERME SANTOS DE ALMEIDA NERI, SERGIO EDSON DA SILVA","viagens_30d":50,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH","no_proc_cavalo":false},{"placa":"NTS2D92","motoristas":"GUILHERME SANTOS DE ALMEIDA NERI, SERGIO EDSON DA SILVA","viagens_30d":50,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH","no_proc_cavalo":false},{"placa":"ELW8306","motoristas":"PAULO ROBERTO DA SILVA","viagens_30d":48,"ult_viagem":"11/06/2026","transportadoras":"CONTRAIL DH","no_proc_cavalo":false},{"placa":"NTS8D21","motoristas":"PAULO ROBERTO DA SILVA","viagens_30d":48,"ult_viagem":"11/06/2026","transportadoras":"CONTRAIL DH","no_proc_cavalo":false},{"placa":"EWU6F66","motoristas":"PEDRO MARCOS MONGIATI","viagens_30d":16,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH","no_proc_cavalo":false},{"placa":"FEI4088","motoristas":"PAULO SERGIO BRANDAO","viagens_30d":3,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL)","no_proc_cavalo":false},{"placa":"EAI3A92","motoristas":"WILSON JULIANO DE OLIVEIRA","viagens_30d":1,"ult_viagem":"04/06/2026","transportadoras":"AGREGADOS (CONTRAIL)","no_proc_cavalo":false}];
+const MOTFORA= [{"motorista":"PAULO ROBERTO DA SILVA","carretas":"ELW8306, NTS8D21","viagens_30d":96,"ult_viagem":"11/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"SERGIO EDSON DA SILVA","carretas":"EMU0995, NTS2D92","viagens_30d":92,"ult_viagem":"11/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"SIDNEI GONZAGA DA SILVA","carretas":"FEI2950, FVW5H48","viagens_30d":45,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"ANTONIO RAFAEL DOS SANTOS","carretas":"DAJ8765, DJB6139, EPU9192, FEI2953, FOR0H21, NONE, TIQ6E48","viagens_30d":44,"ult_viagem":"15/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"JOZUE JORGE DE OLIVEIRA","carretas":"DAJ8765, DJB6139, FEI2953, JBC7G14","viagens_30d":43,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"WILLIAN DE PAULA MORAES","carretas":"FEI4791, RLE2F76","viagens_30d":43,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"JOSE AUGUSTO RIBEIRO DA SILVA","carretas":"DJB6139, FOR0H21, FZI9C75","viagens_30d":39,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"RAFAEL VICENTE DAMIGO","carretas":"UDT4E94","viagens_30d":24,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"REGINALDO DA VEIGA","carretas":"UDU4C53","viagens_30d":24,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"ELTON CLEITON RODRIGUES","carretas":"MIK3B49","viagens_30d":23,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"FELIPE JACOMETTE SALVADOR","carretas":"FXV4J45, UET4A12","viagens_30d":23,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"JURANDIR FERNANDES","carretas":"ECU8I05, TLQ0A67","viagens_30d":23,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"RICARDO CESAR RODRIGUES","carretas":"MIK3B49, TJK1G40","viagens_30d":23,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"ALEX ROBERTO LOPES","carretas":"UEZ9C76","viagens_30d":22,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"OSWALDO JOSE DE ASSIS","carretas":"FXV4J45, MKT3E52","viagens_30d":22,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"WILSON JULIANO DE OLIVEIRA","carretas":"EAI3A92, FCE3F33","viagens_30d":22,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"MAYCON OLIVEIRA DA CRUZ","carretas":"UDZ8A17","viagens_30d":20,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"ALESSANDRO APARECIDO COSTA","carretas":"JBC7G16","viagens_30d":18,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"LEONARDO PEDREIRA MARQUES","carretas":"AJW7C88, GHS2J36","viagens_30d":18,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"ALVIMAR JAPPE","carretas":"ECU8I05, TLQ0A67","viagens_30d":16,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"DJALMA MARTINS DA SILVA","carretas":"ELO8104, TLQ0A67","viagens_30d":16,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"PEDRO MARCOS MONGIATI","carretas":"EWU6F66","viagens_30d":16,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"TIAGO SCHUMACHER","carretas":"TKJ2G80","viagens_30d":14,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"HENRIQUE STECH","carretas":"ELO8104","viagens_30d":13,"ult_viagem":"28/05/2026","transportadoras":"CONTRAIL DH"},{"motorista":"VAGNER DE MADUREIRA E SILVA","carretas":"ELU9G06, RLE2F76","viagens_30d":13,"ult_viagem":"11/06/2026","transportadoras":"AGREGADOS (CONTRAIL)"},{"motorista":"GUILHERME DOS SANTOS FILHO","carretas":"FMY0B84","viagens_30d":12,"ult_viagem":"03/06/2026","transportadoras":"AGREGADOS (CONTRAIL)"},{"motorista":"LUCAS CAIQUE DE LIMA LOPES","carretas":"KZK6J73, UDB5J64","viagens_30d":9,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"MARCELO CAETANO DOS SANTOS","carretas":"TIQ6E48","viagens_30d":9,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"FABIO PEREIRA BINATTO","carretas":"DAJ8765, DJB6139, FVF7D57","viagens_30d":8,"ult_viagem":"03/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"GUILHERME SANTOS DE ALMEIDA NERI","carretas":"EMU0995, NTS2D92","viagens_30d":8,"ult_viagem":"12/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"GUILHERME VIEIRA","carretas":"CUA5B52, DAJ8765, FOL4F13, NONE","viagens_30d":8,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"JOAO MARCELINO NETO","carretas":"FEI2953, NONE, RXR4C78","viagens_30d":8,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"JOSE ELIAS FILHO","carretas":"EPU9192, FOR0H21, TIQ6E48","viagens_30d":7,"ult_viagem":"10/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"CLAUDIMIR KARNER","carretas":"TKJ2G80","viagens_30d":5,"ult_viagem":"19/05/2026","transportadoras":"CONTRAIL DH"},{"motorista":"RONILSON GOMES DOS SANTOS","carretas":"EPU9192, FEI2953, TIQ6E48","viagens_30d":4,"ult_viagem":"03/06/2026","transportadoras":"AGREGADOS (CONTRAIL), CONTRAIL DH"},{"motorista":"FERNANDO BARBOSA ALVES","carretas":"FUO8C96","viagens_30d":3,"ult_viagem":"20/05/2026","transportadoras":"AGREGADOS (CONTRAIL)"},{"motorista":"GUILHERME AUGUSTO FERNANDES DA SILVA","carretas":"TLI7A23","viagens_30d":3,"ult_viagem":"14/05/2026","transportadoras":"AGREGADOS (CONTRAIL)"},{"motorista":"PAULO SERGIO BRANDAO","carretas":"FEI4088","viagens_30d":3,"ult_viagem":"12/06/2026","transportadoras":"AGREGADOS (CONTRAIL)"},{"motorista":"RICARDO DA SILVA CAETANO","carretas":"TKC4C10","viagens_30d":2,"ult_viagem":"15/05/2026","transportadoras":"AGREGADOS (CONTRAIL)"},{"motorista":"FABIANO CARVALHO MANTANA","carretas":"GHS2J36","viagens_30d":1,"ult_viagem":"03/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"FLAVIO PEREIRA BINATTO","carretas":"DJB6139","viagens_30d":1,"ult_viagem":"03/06/2026","transportadoras":"CONTRAIL DH"},{"motorista":"HUGO LEONARDO ALVES KAFICA","carretas":"FUO8C96","viagens_30d":1,"ult_viagem":"15/05/2026","transportadoras":"AGREGADOS (CONTRAIL)"},{"motorista":"RONDINELLI BISPO DE DEUS","carretas":"FEI2953","viagens_30d":1,"ult_viagem":"22/05/2026","transportadoras":"CONTRAIL DH"}];
+const RESUMO = {"total": 60, "situacao": {"MANUTENÇÃO": 1, "ATIVO": 30, "UNIMETAL": 16, "UNIMETAL SOROCABA": 4, "UNIMETAL COSMOPOLIS": 8, "NAN": 1}, "status": {"rodando": 50, "escala": 0, "manut": 2, "inativo": 8, "sem-reg": 0}, "car_fora": 7, "mot_fora": 43};
+
+/* ── KPIs ───────────────────────────────── */
+function renderKpis(){
+  const s = RESUMO.status, sit = RESUMO.situacao;
+  const ativos = sit['ATIVO'] || 0, unimetal = sit['UNIMETAL'] || 0;
+  const kpis = [
+    {l:'Motoristas no PROC',  v:RESUMO.total,             s:'total escalados',                       c:''},
+    {l:'ATIVO',               v:ativos,                   s:'escala Contrail',                       c:'lime'},
+    {l:'UNIMETAL',            v:unimetal,                 s:'operação Unimetal',                     c:'azul'},
+    {l:'Rodando hoje',        v:s.rodando||0,             s:'viagem em '+'11/06',                 c:'lime'},
+    {l:'Em escala',           v:s.escala||0,              s:'até 1 dia útil parado',                 c:''},
+    {l:'Possível manutenção', v:s.manut||0,               s:'2 a 4 dias úteis parado',               c:'amarelo'},
+    {l:'Inativo',             v:s.inativo||0,             s:'5+ dias úteis parado',                  c:'vermelho'},
+    {l:'Sem registro',        v:s['sem-reg']||0,          s:'nenhuma viagem este ano',               c:''},
+    {l:'⚠️ Carretas fora',    v:RESUMO.car_fora,          s:'rodando sem estar no PROC',             c:'vermelho'},
+    {l:'⚠️ Motoristas fora',  v:RESUMO.mot_fora,          s:'rodando sem estar no PROC',             c:'vermelho'},
+  ];
+  document.getElementById('kpis-top').innerHTML = kpis.map(k=>
+    `<div class="kpi ${k.c}"><div class="lab">${k.l}</div><div class="val">${k.v}</div><div class="sub">${k.s}</div></div>`
+  ).join('');
+  document.getElementById('badge-car').textContent = RESUMO.car_fora;
+  document.getElementById('badge-mot').textContent = RESUMO.mot_fora;
+  // se zero, esconder o badge
+  if(RESUMO.car_fora === 0) document.getElementById('badge-car').style.background = '#9aa39d';
+  if(RESUMO.mot_fora === 0) document.getElementById('badge-mot').style.background = '#9aa39d';
+}
+
+/* ── Ordenação universal ───────────────── */
+const sortState = {proc:{col:'dias_parado',dir:'desc'}, car:{col:'viagens_30d',dir:'desc'}, mot:{col:'viagens_30d',dir:'desc'}};
+function sort(arr, col, dir){
+  return [...arr].sort((a,b)=>{
+    let A=a[col], B=b[col];
+    if(typeof A==='string') return dir==='asc' ? A.localeCompare(B,'pt-BR') : B.localeCompare(A,'pt-BR');
+    if(A==null) A = -Infinity; if(B==null) B = -Infinity;
+    return dir==='asc' ? A-B : B-A;
+  });
+}
+
+/* ── Tabela: motoristas do PROC ────────── */
+const COLS_PROC = [
+  {k:'nome',         t:'Motorista'},
+  {k:'situacao',     t:'Situação'},
+  {k:'cavalo',       t:'Cavalo'},
+  {k:'carreta',      t:'Carreta'},
+  {k:'ult_viagem',   t:'Última viagem'},
+  {k:'dias_parado',  t:'Dias úteis',    cls:'num'},
+  {k:'viagens_30d',  t:'Viagens 30d',   cls:'num'},
+  {k:'status_rotulo',t:'Status'},
+];
+function renderProc(){
+  const busca = document.getElementById('busca-proc').value.toLowerCase();
+  const situ  = document.getElementById('filtro-situ').value;
+  const stat  = document.getElementById('filtro-status').value;
+  let arr = PROC.filter(r=>{
+    if(busca){
+      const all = (r.nome+' '+r.carreta+' '+r.cavalo).toLowerCase();
+      if(!all.includes(busca)) return false;
+    }
+    if(situ && r.situacao !== situ) return false;
+    if(stat && r.status_cls !== stat) return false;
+    return true;
+  });
+  arr = sort(arr, sortState.proc.col, sortState.proc.dir);
+
+  // thead
+  const ths = COLS_PROC.map(c=>{
+    const sc = sortState.proc.col===c.k ? sortState.proc.dir : '';
+    return `<th class="${c.cls||''} ${sc}" onclick="ordenar('proc','${c.k}')">${c.t}</th>`;
+  }).join('');
+
+  // tbody
+  const trs = arr.map(r=>{
+    const dp = r.dias_parado<0 ? '—' : r.dias_parado;
+    return `<tr>
+      <td><b>${r.nome}</b></td>
+      <td>${r.situacao}</td>
+      <td>${r.cavalo}</td>
+      <td>${r.carreta}</td>
+      <td>${r.ult_viagem}</td>
+      <td class="num">${dp}</td>
+      <td class="num">${r.viagens_30d}</td>
+      <td><span class="pill ${r.status_cls}">${r.status_rotulo}</span></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('tb-proc').innerHTML =
+    `<thead><tr>${ths}</tr></thead><tbody>${trs || '<tr><td colspan="8" class="empty">Nenhum resultado para esse filtro.</td></tr>'}</tbody>`;
+  document.getElementById('count-proc').textContent = arr.length + ' de ' + PROC.length + ' motoristas';
+}
+
+/* ── Tabela: carretas fora ─────────────── */
+const COLS_CAR = [
+  {k:'placa',           t:'Placa'},
+  {k:'motoristas',      t:'Motorista(s) visto(s)'},
+  {k:'viagens_30d',     t:'Viagens 30d', cls:'num'},
+  {k:'ult_viagem',      t:'Última viagem'},
+  {k:'transportadoras', t:'Transportadora'},
+];
+function renderCar(){
+  const busca = document.getElementById('busca-car').value.toLowerCase();
+  let arr = CARFORA.filter(r=>{
+    if(!busca) return true;
+    return (r.placa+' '+r.motoristas+' '+r.transportadoras).toLowerCase().includes(busca);
+  });
+  arr = sort(arr, sortState.car.col, sortState.car.dir);
+
+  const ths = COLS_CAR.map(c=>{
+    const sc = sortState.car.col===c.k ? sortState.car.dir : '';
+    return `<th class="${c.cls||''} ${sc}" onclick="ordenar('car','${c.k}')">${c.t}</th>`;
+  }).join('');
+
+  const trs = arr.length ? arr.map(r=>{
+    const flagCavalo = r.no_proc_cavalo ? ' <span class="pill alerta" title="Esta placa está cadastrada como CAVALO no PROC, não como carreta">cavalo</span>' : '';
+    const isDH = r.transportadoras.includes('CONTRAIL DH');
+    const tag  = isDH ? '<span class="pill dh">DH</span> ' : '';
+    return `<tr>
+      <td><b>${r.placa}</b>${flagCavalo}</td>
+      <td>${r.motoristas}</td>
+      <td class="num">${r.viagens_30d}</td>
+      <td>${r.ult_viagem}</td>
+      <td>${tag}${r.transportadoras}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="5"><div class="empty"><span class="emoji">✅</span>Nenhuma carreta fora da lista no período. Tudo certo!</div></td></tr>';
+
+  document.getElementById('tb-car').innerHTML = `<thead><tr>${ths}</tr></thead><tbody>${trs}</tbody>`;
+  document.getElementById('count-car').textContent = arr.length + ' de ' + CARFORA.length + ' placas';
+}
+
+/* ── Tabela: motoristas fora ───────────── */
+const COLS_MOT = [
+  {k:'motorista',       t:'Motorista'},
+  {k:'carretas',        t:'Carreta(s) usada(s)'},
+  {k:'viagens_30d',     t:'Viagens 30d', cls:'num'},
+  {k:'ult_viagem',      t:'Última viagem'},
+  {k:'transportadoras', t:'Transportadora'},
+];
+function renderMot(){
+  const busca = document.getElementById('busca-mot').value.toLowerCase();
+  let arr = MOTFORA.filter(r=>{
+    if(!busca) return true;
+    return (r.motorista+' '+r.carretas+' '+r.transportadoras).toLowerCase().includes(busca);
+  });
+  arr = sort(arr, sortState.mot.col, sortState.mot.dir);
+
+  const ths = COLS_MOT.map(c=>{
+    const sc = sortState.mot.col===c.k ? sortState.mot.dir : '';
+    return `<th class="${c.cls||''} ${sc}" onclick="ordenar('mot','${c.k}')">${c.t}</th>`;
+  }).join('');
+
+  const trs = arr.length ? arr.map(r=>{
+    const isDH = r.transportadoras.includes('CONTRAIL DH');
+    const tag  = isDH ? '<span class="pill dh">DH</span> ' : '';
+    return `<tr>
+      <td><b>${r.motorista}</b></td>
+      <td>${r.carretas}</td>
+      <td class="num">${r.viagens_30d}</td>
+      <td>${r.ult_viagem}</td>
+      <td>${tag}${r.transportadoras}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="5"><div class="empty"><span class="emoji">✅</span>Nenhum motorista fora da lista no período. Tudo certo!</div></td></tr>';
+
+  document.getElementById('tb-mot').innerHTML = `<thead><tr>${ths}</tr></thead><tbody>${trs}</tbody>`;
+  document.getElementById('count-mot').textContent = arr.length + ' de ' + MOTFORA.length + ' motoristas';
+}
+
+/* ── Ordenar (clique no header) ──────── */
+function ordenar(secao, col){
+  const s = sortState[secao];
+  if(s.col===col) s.dir = s.dir==='asc' ? 'desc' : 'asc';
+  else { s.col = col; s.dir = (col==='nome'||col==='placa'||col==='motorista'||col==='situacao') ? 'asc' : 'desc'; }
+  if(secao==='proc') renderProc(); else if(secao==='car') renderCar(); else renderMot();
+}
+
+/* ── Filtros de situação (dropdown dinâmico) ─── */
+function montarFiltroSitu(){
+  const set = new Set(PROC.map(r=>r.situacao));
+  const sel = document.getElementById('filtro-situ');
+  [...set].sort().forEach(s=>{
+    if(s && s!=='—'){
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s;
+      sel.appendChild(o);
+    }
+  });
+}
+
+/* ── Export Excel ──────────────────────── */
+function exportarSecao(secao){
+  const wb = XLSX.utils.book_new();
+  const filtros = [];
+  const filtroBusca = document.getElementById('busca-'+secao).value;
+  if(filtroBusca) filtros.push('Busca: '+filtroBusca);
+  if(secao==='proc'){
+    const si = document.getElementById('filtro-situ').value;
+    const st = document.getElementById('filtro-status').value;
+    if(si) filtros.push('Situação: '+si);
+    if(st) filtros.push('Status: '+st);
+  }
+  const meta = [['Check de Agregados — '+secao.toUpperCase()],
+                ['Exportado em', new Date().toLocaleString('pt-BR')],
+                ['Filtros', filtros.length ? filtros.join(' | ') : '(sem filtros)'], []];
+
+  let aoa, sheet;
+  if(secao==='proc'){
+    aoa = [['Motorista','Situação','Cavalo','Carreta','Última viagem','Dias úteis parado','Viagens 30d','Status']];
+    document.querySelectorAll('#tb-proc tbody tr').forEach(tr=>{
+      const tds = tr.querySelectorAll('td'); if(tds.length<8) return;
+      aoa.push([...tds].map(td=>td.textContent.trim()));
+    });
+    sheet = 'Status PROC';
+  } else if(secao==='car'){
+    aoa = [['Placa','Motorista(s) visto(s)','Viagens 30d','Última viagem','Transportadora']];
+    document.querySelectorAll('#tb-car tbody tr').forEach(tr=>{
+      const tds = tr.querySelectorAll('td'); if(tds.length<5) return;
+      aoa.push([...tds].map(td=>td.textContent.trim()));
+    });
+    sheet = 'Carretas FORA';
+  } else {
+    aoa = [['Motorista','Carreta(s) usada(s)','Viagens 30d','Última viagem','Transportadora']];
+    document.querySelectorAll('#tb-mot tbody tr').forEach(tr=>{
+      const tds = tr.querySelectorAll('td'); if(tds.length<5) return;
+      aoa.push([...tds].map(td=>td.textContent.trim()));
+    });
+    sheet = 'Motoristas FORA';
+  }
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([...meta, ...aoa]), sheet);
+  XLSX.writeFile(wb, 'check_agregados_'+secao+'_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+/* ── Init ──────────────────────────────── */
+montarFiltroSitu();
+renderKpis(); renderProc(); renderCar(); renderMot();
+['busca-proc','busca-car','busca-mot'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{
+    if(id.endsWith('proc')) renderProc(); else if(id.endsWith('car')) renderCar(); else renderMot();
+  });
+});
+document.getElementById('filtro-situ').addEventListener('change', renderProc);
+document.getElementById('filtro-status').addEventListener('change', renderProc);
+</script>
+</body>
+</html>
