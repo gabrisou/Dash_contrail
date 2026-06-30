@@ -212,26 +212,37 @@ def main():
     # --- git ---
     label = agora.strftime("%d/%m/%Y %H:%M")
 
-    git_cmd("add", "produtividade.html")
-    git_cmd("commit", "-m", f"Produtividade {label}")
-    print(f"   commit produtividade.html")
+    def commit_se_houver_mudanca(arquivo, mensagem):
+        git_cmd("add", arquivo)
+        resultado = subprocess.run(
+            ["git", "-C", REPO_DIR, "diff", "--cached", "--quiet"],
+            capture_output=True
+        )
+        if resultado.returncode != 0:
+            git_cmd("commit", "-m", mensagem)
+            print(f"   commit {arquivo}")
+            return True
+        print(f"   {arquivo} sem mudanças, pulando commit")
+        return False
 
-    git_cmd("add", "index.html")
-    git_cmd("commit", "-m", f"Atualização automática {label}")
-    print(f"   commit index.html")
+    houve_commit = False
+    houve_commit |= commit_se_houver_mudanca("produtividade.html", f"Produtividade {label}")
+    houve_commit |= commit_se_houver_mudanca("index.html", f"Atualização automática {label}")
 
-    # push com retry
-    for tentativa, espera in enumerate([0, 2, 4, 8, 16], start=1):
-        if espera:
-            import time; time.sleep(espera)
-        try:
-            git_cmd("push", "-u", "origin", BRANCH)
-            print(f"   push concluído (tentativa {tentativa})")
-            break
-        except subprocess.CalledProcessError:
-            if tentativa == 5:
-                raise
-            print(f"   push falhou, aguardando {espera}s...")
+    if houve_commit:
+        for tentativa, espera in enumerate([0, 2, 4, 8, 16], start=1):
+            if espera:
+                import time; time.sleep(espera)
+            try:
+                git_cmd("push", "-u", "origin", BRANCH)
+                print(f"   push concluído (tentativa {tentativa})")
+                break
+            except subprocess.CalledProcessError:
+                if tentativa == 5:
+                    raise
+                print(f"   push falhou, aguardando {espera}s...")
+    else:
+        print("   nenhum commit necessário, push ignorado")
 
     print(f"✓ Concluído: {label}")
 
